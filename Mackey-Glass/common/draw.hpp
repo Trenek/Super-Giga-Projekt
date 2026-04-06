@@ -5,6 +5,9 @@ struct thing {
     FILE *fileDesc;
     const char *name;
     const char *file;
+
+    const char *xName;
+    const char *yName;
 };
 
 class gnuPlotManager {

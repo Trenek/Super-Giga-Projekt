@@ -9,11 +9,11 @@
 #define n 9.65
 
 capd::autodiff::Node f(capd::autodiff::Node x0, capd::autodiff::Node xN) {
-    return - (gamma * x0) + ((beta * (xN ^ k)) / (1 + (xN ^ n)));
+    return - gamma * x0 + beta * (xN ^ k) / (1 + (xN ^ n));
 }
 
 double x(double j) {
-    return cos((j * std::numbers::pi) / N);
+    return cos(j * std::numbers::pi / N);
 }
 
 double c(double i) {
@@ -62,25 +62,25 @@ void mackeyGlass(
 }
 
 int main() {
-    capd::LDVector u{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-
     class gnuPlotManager manager{{
         {
-            .name = "Kąt między maksymalnymi wychyleniami",
-            .file = "data.dat"
+            .name = "Trajektoria",
+            .file = "data.dat",
+
+            .xName = "x0",
+            .yName = "xN"
         }
     }};
 
-    manager.print(0, "{} {}\n", u[0], u[N]);
-
     constexpr uint32_t order = 200;
-    capd::LDMap f(mackeyGlass, N + 1, N + 1, 0);
-
+    capd::LDMap f{mackeyGlass, N + 1, N + 1, 0};
     capd::LDOdeSolver solver{f, order};
-
-    solver.setStep(0.001);
+    capd::LDVector u{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
     long double t = 0.0;
+
+    solver.setStep(0.001);
+    manager.print(0, "{} {}\n", u[0], u[N]);
 
     while (true) {
         u = solver(t, u);

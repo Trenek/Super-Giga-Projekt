@@ -2,13 +2,11 @@
 
 #include "draw.hpp"
 
-static void setGNUPlot(struct thing thing) {
-    static int num = 1;
-
-    fprintf(thing.fileDesc, "set term qt %d size 800,600\n", num);
+static void setGNUPlot(int id, struct thing thing) {
+    fprintf(thing.fileDesc, "set term qt %d size 800,600\n", id);
     fprintf(thing.fileDesc, "set title '%s'\n", thing.name);
-    fprintf(thing.fileDesc, "set xlabel 'x'\n");
-    fprintf(thing.fileDesc, "set ylabel 'y'\n");
+    fprintf(thing.fileDesc, "set xlabel '%s'\n", thing.xName);
+    fprintf(thing.fileDesc, "set ylabel '%s'\n", thing.yName);
     fprintf(thing.fileDesc, "set grid\n");
 
     fprintf(thing.fileDesc, "pause 1\n");
@@ -18,8 +16,6 @@ static void setGNUPlot(struct thing thing) {
     fprintf(thing.fileDesc, "    replot\n");
     fprintf(thing.fileDesc, "}\n");
     fflush(thing.fileDesc);
-
-    num += 1;
 }
 
 static void cleanup(std::vector<struct thing> thing) {
@@ -33,7 +29,7 @@ static void createPlot(std::vector<struct thing> thing) {
     for (size_t i = 0; i < thing.size(); i += 1) {
         thing[i].fileDesc = popen("gnuplot", "w");
 
-        setGNUPlot(thing[i]);
+        setGNUPlot(i, thing[i]);
     }
 };
 
