@@ -2,10 +2,10 @@
 set -e
 
 # compile C++
-g++ main.cpp -o cubeIkeda  `capd-config --cflags --libs`
+g++ main.cpp -o cubicIkeda  `capd-config --cflags --libs`
 
 # run C++ → generate CSV
-./cubeIkeda output/result.csv
+./cubicIkeda output/result.csv
 
 # run Python → generate plot
 python3 plot_traj.py
