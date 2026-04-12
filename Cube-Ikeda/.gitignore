@@ -3,8 +3,15 @@ venv/
 __pycache__/
 
 # compiled binary
-cubeIkeda
+output/cubicIkeda
 
-# ignore generated files in output folder
+# build artifacts
+.obj/
+
+# generated files in output folder
 output/*.csv
 output/*.png
+output/*.txt
+
+# keep output folder in repo
+!output/.gitkeep

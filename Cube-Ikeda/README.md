@@ -1,14 +1,28 @@
-## Overview
+# Cubic Ikeda DDE — Bifurcation & Poincaré Analysis
 
-The idea of this part of the project is to apprximate a solution to the cubic Ikeda equation.\
-A simple pipeline of the code:
+**Cubic Ikeda delay differential equation (DDE)**:
 
-1. **C++ program** (`main.cpp`) generates data and writes it to a CSV file.
-2. **Python script** (`plot_traj.py`) reads the CSV and generates a plot (`PNG`).
+```
+x'(t) = a · x(t−τ) · (1 − x(t−τ)²)
+```
 
-All generated files are stored in the `output/` folder.
+---
 
+## Project structure
 
+```
+.
+├── main.cpp                  # entry point — attractor visualisation, bifurcation diagram & Poincaré map
+├── computations/
+│   ├── solveOde.cpp/.h       # ODE solver helpers, solution curve extraction
+│   └── toOdeFuncs.cpp/.h     # pseudospectral approximation matrix
+├── plot_traj.py              # Python plotting of output/curve.csv
+├── venv/                     # Python virtual environment
+├── output/                   # generated files (created automatically)
+└── Makefile
+```
+
+---
 ## Setup
 
 For plotting the trajectory you need python libraries provided in requirements. \
@@ -20,13 +34,19 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+If `capd-config` is not on your `PATH`, set `CAPDBINDIR` in the Makefile to the directory containing it:
 
-## Run
-
-To approximate and visualise the trajectory, it is enough to run
-```bash
-bash run.sh
+```makefile
+CAPDBINDIR = /path/to/capd/build/bin/
 ```
 
-## Output
-Current version of the visualisation is provided in the `trajectory.png` file.
+## Build & run
+
+### Using Make 
+
+```bash
+make          # compile only
+make run      # compile + run C++ binary
+make plot     # compile + run + generate Python plots
+make clean    # remove binary and object files
+```

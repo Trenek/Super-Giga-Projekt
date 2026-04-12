@@ -11,3 +11,12 @@ ax.set_ylabel('x(t-tau)')
 
 # We save the figure instead of showing it
 plt.savefig("output/traj_plot.png", dpi=300)
+
+with open('output/poincare.txt') as f:
+    for line in f:
+        line = line.strip().strip('{}') 
+        values = [float(v) for v in line.split(',')]
+        plt.scatter(values[0], values[-1], color='purple', linewidths = .5) 
+
+# We save the figure instead of showing it
+plt.savefig("output/poincare_traj_plot.png", dpi=300)
