@@ -1,6 +1,6 @@
 # ── project ──────────────────────────────────────────────────────────────────
 PROGS   = output/cubicIkeda
-OTHERS  = computations/integrateFuncs computations/toOdeFuncs
+OTHERS  = computations/integrateFuncs computations/toOdeFuncs computations/newton
 
 # ── capd ─────────────────────────────────────────────────────────────────────
 CAPDBINDIR =

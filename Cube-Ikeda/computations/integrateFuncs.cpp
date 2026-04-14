@@ -24,11 +24,10 @@ DTimeMap::SolutionCurve getSolutionCurve(DTimeMap timeMap, DVector start,
 void getPoincareValues(DPoincareMap &pm, DVector &x, const string &filename) {
   ofstream csv(filename);
   csv << x << "\n";
-  double returnTime = 0;
-  DVector returnPoint = pm(x, returnTime);
+  DVector returnPoint = pm(x);
   csv << returnPoint << "\n";
   for (int i = 0; i < 10; i++) {
-    returnPoint = pm(returnPoint, returnTime);
+    returnPoint = pm(returnPoint);
     csv << returnPoint << "\n";
   }
   csv.close();
@@ -36,31 +35,34 @@ void getPoincareValues(DPoincareMap &pm, DVector &x, const string &filename) {
 
 // gnuplot code written by Claude
 void plotBifurcationDiagram(DMap &CubicIkeda, DPoincareMap &pm, DVector &x,
-                            double aStart, double aEnd, double aIncrease,
+                            double aStart, double aEnd, double aFrequency,
                             int noSteps, string filename) {
   FILE *gp = popen("gnuplot", "w"); // no -persistent needed for file output
-
+  // string filename = "images/finding2periodic.png";
   fprintf(gp, "set terminal pngcairo size 1200,800\n");
   fprintf(gp, "set output '%s'\n", filename.c_str());
   fprintf(gp, "set title 'Bifurcation diagram - Cubic Ikeda DDE'\n");
   fprintf(gp, "set xlabel 'a'\n");
   fprintf(gp, "set ylabel 'x(t-{/Symbol t}) at section'\n");
   fprintf(gp, "set pointsize 1.5\n");
+
+  // this gave me confirmation that for a = 1.535 there is the 2-periodic orbit
+  // fprintf(gp, "set arrow from %f, graph 0 to %f, graph 1 nohead lc rgb 'red' lw 1.5\n", 1.535, 1.535);
+
   fprintf(gp, "plot '-' with dots lc rgb '#000000' notitle\n");
 
+  double aIncrease = (aEnd-aStart)/aFrequency;
   DVector returnPoint(x);
   int N = returnPoint.dimension() - 1;
   for (double a = aStart; a <= aEnd; a += aIncrease) {
-    cout << "a = " <<  a << endl;
+    cout << "plotting bifurcation diagram for a = " <<  a << endl;
     CubicIkeda.setParameters({a});
     try {
       for (int k = 0; k < 3. / 4. * noSteps; k++) {
-        double returnTime = 0.;
-        returnPoint = pm(returnPoint, returnTime);
+        returnPoint = pm(returnPoint);
       }
       for (int k = 3. / 4. * noSteps; k < noSteps; k++) {
-        double returnTime = 0.;
-        returnPoint = pm(returnPoint, returnTime);
+        returnPoint = pm(returnPoint);
         fprintf(gp, "%f %f\n", a, returnPoint[N]);
       }
     } catch (exception &e) {

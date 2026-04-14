@@ -1,4 +1,5 @@
 #include "computations/integrateFuncs.h"
+#include "computations/newton.h"
 #include "computations/toOdeFuncs.h"
 #include <iomanip>
 #include <iostream>
@@ -45,18 +46,13 @@ int main() {
   int dimIn = N + 1, dimOut = N + 1, noParams = 1, highestDerivative = 1;
   double tau = 1., a = 1.57;
   int taylorOrder = 20;
-  double returnTime = 0;
+  double returnTime = 0.;
 
   // relative paths for storing produced data
   string filenameM = "output/matrixM.txt";
   string filenamePoincare = "output/poincare.txt";
   string filenameSolutionCurve = "output/curve.csv";
   string filenameBifurc = "output/bifurcDiagram.png";
-
-  DVector x(N + 1);
-  for (int i = 0; i <= N; i++)
-    x[i] = 0.5;
-  cout << "Starting point: " << x << endl;
 
   approxMatrix = compute_approxMatrix(tau, N, filenameM);
 
@@ -67,22 +63,49 @@ int main() {
   DOdeSolver solver(CubicIkeda, taylorOrder);
   DTimeMap timeMap(solver);
 
+  /// atractor for starting x:
+  DVector x(N + 1);
+  for (int i = 0; i <= N; i++)
+    x[i] = 0.5;
+  cout << "attractor starting point: " << x << endl;
   // eventually will change to plot it using gnuplot,
   // for now it save it in a file and plots in python script
   DTimeMap::SolutionCurve solution =
       getSolutionCurve(timeMap, x, 500., 0., filenameSolutionCurve);
 
-  double aStart = 1.35;
+  double aStart = 1.5;
   double aEnd = 1.56;
-  double aIncrease = 0.0005;
+  double aFrequency = 1000;
   double noSteps = 1000;
 
   DCoordinateSection section(N + 1, 0, 0);
   DPoincareMap pm(solver, section, poincare::MinusPlus);
 
-  getPoincareValues(pm, x, filenamePoincare);
+  // getPoincareValues(pm, x, filenamePoincare);
 
-  plotBifurcationDiagram(CubicIkeda, pm, x, aStart, aEnd, aIncrease, noSteps,
-                         filenameBifurc);
+  // plotBifurcationDiagram(CubicIkeda, pm, x, aStart, aEnd, aFrequency, noSteps,
+  //                        filenameBifurc);
+
+
+  /// searching for stationary point for lower papameter a
+  CubicIkeda.setParameters({1.5});
+
+  DVector start(N+1);
+  start[0]= 0;
+  start[N] = 1.44;
+  for (int i = 1; i <N; i++){
+    start[i]=1/4.;
+  }
+
+  DVector stationaryPoint = getZero(pm, start, 100);
+  cout << setprecision(10) << "difference betweeen found x0 and P(x0):\n" << stationaryPoint - pm(stationaryPoint) << endl;
+
+  
+  /// searching for stationary point after bifurcation
+  CubicIkeda.setParameters({1.54});
+
+  DVector newStatPoint = getZero(pm, stationaryPoint, 100);
+  cout << setprecision(10) << "difference betweeen found x1 and P(x1):\n" << newStatPoint - pm(newStatPoint) << endl;
+
   return 0;
 }

@@ -27,9 +27,9 @@ void getPoincareValues(DPoincareMap &pm, DVector &x, const string &filename);
 /// @param x        initial state vector.
 /// @param aStart   starting value of parameter a.
 /// @param aEnd     ending value of parameter a.
-/// @param aIncrease  increment of parameter a between successive evaluations.
 /// @param noSteps  number of iterations computed for each value of a.
 /// @param filename path to the output PNG file (must be non-empty).
 void plotBifurcationDiagram(DMap &dmap, DPoincareMap &pm, DVector &x,
-                            double aStart, double aEnd, double aIncrease,
+                            double aStart, double aEnd, double aFrequency,
                             int noSteps, string filename);
+//  @param aIncrease  increment of parameter a between successive evaluations.
