@@ -34,11 +34,8 @@ int main() {
         }
     }
 
-    long double t = 0.0;
+    capd::LDVector temp{map(timeMap(100, u))};
 
-    capd::LDVector temp{u};
-
-    temp = map(timeMap(100, temp));
     manager.print(0, "{} {}\n", n, temp[N]);
     manager.fflush();
 
@@ -51,8 +48,8 @@ int main() {
             manager.print(0, "{} {}\n", n, temp[N]);
         }
 
-        n += 0.0001;
         f.setParameter(0, n);
+        n += 0.0001;
     }
 
     return 0;
