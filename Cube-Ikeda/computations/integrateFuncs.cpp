@@ -1,6 +1,6 @@
 #include "integrateFuncs.h"
 
-DTimeMap::SolutionCurve getSolutionCurve(DTimeMap timeMap, DVector start,
+void getSolutionCurve(DTimeMap timeMap, DVector start,
                                          double time, double skip,
                                          string filename) {
   DTimeMap::SolutionCurve solution(0.);
@@ -17,8 +17,6 @@ DTimeMap::SolutionCurve getSolutionCurve(DTimeMap timeMap, DVector start,
     }
     csv.close();
   }
-
-  return solution;
 }
 
 void getPoincareValues(DPoincareMap &pm, DVector &x, const string &filename) {

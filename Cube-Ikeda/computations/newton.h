@@ -4,4 +4,4 @@
 using namespace capd;
 using namespace std;
 
-DVector getZero(DPoincareMap& pm, DVector& x0, int k);
+DVector getZero(DPoincareMap& pm, DVector& x0, double precision);

@@ -21,7 +21,8 @@ void approx_CubicIkeda(capd ::autodiff ::Node /*t*/, // unused time variable
                        int dimOut, // output : function values
                        capd ::autodiff ::Node params[],
                        int noParam // parameters
-) {
+)
+{
   int N = dimIn - 1;
 
   // out[0] = f(x(t), x(t-tau))
@@ -31,7 +32,8 @@ void approx_CubicIkeda(capd ::autodiff ::Node /*t*/, // unused time variable
   capd ::autodiff ::Node xDelayed = in[N];
   out[0] = a * xDelayed * (1 - xDelayed * xDelayed);
 
-  for (int i = 1; i <= N; i++) {
+  for (int i = 1; i <= N; i++)
+  {
     capd ::autodiff ::Node result(0.);
     for (int j = 0; j <= N; j++)
       result += approxMatrix[i][j] * in[j];
@@ -41,7 +43,8 @@ void approx_CubicIkeda(capd ::autodiff ::Node /*t*/, // unused time variable
 
 // MAIN FUNCTION // ---------------------------------------------------------------------
 
-int main() {
+int main()
+{
   int N = 6;
   int dimIn = N + 1, dimOut = N + 1, noParams = 1, highestDerivative = 1;
   double tau = 1., a = 1.57;
@@ -62,54 +65,59 @@ int main() {
 
   DOdeSolver solver(CubicIkeda, taylorOrder);
   DTimeMap timeMap(solver);
-  
-  /* plotting atractor for starting point x: */ 
+
+  /* plotting atractor for starting point x: */
   DVector x(N + 1);
   for (int i = 0; i <= N; i++)
     x[i] = 0.5;
 
   // eventually will change to plot it using gnuplot,
   // for now it saves data in a file and plots in python script
-  DTimeMap::SolutionCurve solution =
-      getSolutionCurve(timeMap, x, 500., 0., filenameSolutionCurve);
+  getSolutionCurve(timeMap, x, 500., 0., filenameSolutionCurve);
 
-  /* defining Poincare map */    
+  /* defining Poincare map */
   DCoordinateSection section(N + 1, 0, 0);
   DPoincareMap pm(solver, section, poincare::MinusPlus);
-  
+
   /* values for bifurcation diagram */
   double aStart = 1.5;
   double aEnd = 1.56;
   double aFrequency = 1000;
-  double noSteps = 1000;
+  int noSteps = 1000;
 
   // getPoincareValues(pm, x, filenamePoincare);  // saves a few values for ensuring the section is correct
-
 
   /* plots bifurcation diagram: will take a while :) */
   // plotBifurcationDiagram(CubicIkeda, pm, x, aStart, aEnd, aFrequency, noSteps,
   //                        filenameBifurc);
 
-
   /* searching for stationary point for lower papameter a */
   CubicIkeda.setParameters({1.5});
+  double precision = 1e-15;
 
-  DVector start(N+1);
-  start[0]= 0;
+  DVector start(N + 1);
+  start[0] = 0;
   start[N] = 1.44;
-  for (int i = 1; i <N; i++){
-    start[i]=1/4.;
+  for (int i = 1; i < N; i++)
+  {
+    start[i] = 1 / 4.;
   }
 
-  DVector stationaryPoint = getZero(pm, start, 100);
-  cout << setprecision(10) << "difference betweeen found x0 and P(x0):\n" << stationaryPoint - pm(stationaryPoint) << endl;
+  DVector periodicPoint = getZero(pm, start, precision);
+
+  a = 1.53;
+  while (a < 1.538)
+  {
+    CubicIkeda.setParameters({a});
+    periodicPoint = getZero(pm, periodicPoint, precision);
+    a += .0008;
+  }
+  cout << "difference betweeen found x and P(x) for a = " << a << ":\n"
+       << periodicPoint - pm(periodicPoint) << endl;
+
+  getSolutionCurve(timeMap, periodicPoint, 200., 0., "output/newton.csv");
 
   
-  /* searching for stationary point after bifurcation */
-  CubicIkeda.setParameters({1.535});
-
-  DVector newStatPoint = getZero(pm, stationaryPoint, 100);
-  cout << setprecision(10) << "difference betweeen found x1 and P(x1):\n" << newStatPoint - pm(newStatPoint) << endl;
 
   return 0;
 }

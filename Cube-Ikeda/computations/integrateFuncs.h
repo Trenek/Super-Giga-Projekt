@@ -10,7 +10,7 @@ using namespace std;
 /// @param time     value of time for integration
 /// @param skip     value of time skipped before saving data into csv
 /// @param filename path to the output csv file (must be non-empty)
-DTimeMap::SolutionCurve getSolutionCurve(DTimeMap timeMap, DVector x,
+void getSolutionCurve(DTimeMap timeMap, DVector x,
                                          double time, double skip,
                                          string filename);
 
