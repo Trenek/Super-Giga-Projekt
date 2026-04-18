@@ -18,7 +18,7 @@ int main() {
 
     constexpr uint32_t order = 20;
     long double n = 8.7;
-    capd::LDMap f{mackeyGlass, N + 1, N + 1, 1}; {
+    capd::LDMap f{mackeyGlass<N>, N + 1, N + 1, 1}; {
         f.setParameter(0, n);
     }
     capd::LDOdeSolver solver{f, order}; {
