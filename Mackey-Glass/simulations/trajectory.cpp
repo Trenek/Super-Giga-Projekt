@@ -2,12 +2,10 @@
 
 #include "mackeyGlass.hpp"
 #include "draw.hpp"
-#include "sigintHandler.hpp"
 
 #define N 5
 #define n 9
 
-// Teken's theorem
 int main() {
     class gnuPlotManager manager{{
         {
@@ -38,17 +36,10 @@ int main() {
     manager.print(0, "{} {}\n", u[0], u[N]);
     manager.fflush();
 
-    std::signal(SIGINT, signal_handler);
-
-    while (false == cclose) {
+    while (true) {
         u = solver(t, u);
         manager.print(0, "{} {}\n", u[0], u[N]);
     }
 
     return 0;
 }
-
-// metoda newtona - orbita
-// postawić zbiór
-// policzyć własności własne
-// Relacja Nakrywająca
