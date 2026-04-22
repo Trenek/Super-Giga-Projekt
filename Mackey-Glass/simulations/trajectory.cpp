@@ -15,7 +15,7 @@ int main() {
             .xName = "x0",
             .yName = "xN"
         }
-    }};
+    }, true};
 
     constexpr uint32_t order = 20;
     capd::LDMap f{mackeyGlass<N>, N + 1, N + 1, 1}; {

@@ -24,6 +24,23 @@ capd::LDVector Newton(capd::LDVector u, capd::LDPoincareMap map) {
     return u;
 }
 
+void getEigenValues(double n, capd::LDVector u0, capd::LDPoincareMap map) {
+    capd::LDMatrix dPhi(N + 1, N + 1);
+
+    capd::LDVector u1 = map(u0, dPhi);
+    capd::LDMatrix dP = map.computeDP(u0, dPhi);
+
+    capd::LDVector eigRe(N + 1);
+    capd::LDVector eigIm(N + 1);
+    capd::LDMatrix vectRe(N + 1, N + 1);
+    capd::LDMatrix vectIm(N + 1, N + 1);
+
+    capd::alglib::computeEigenvaluesAndEigenvectors(dP, eigRe, eigIm, vectRe, vectIm);
+
+    std::print("n = {}, Wartosci wlasne {}\n", n, capd::alglib::eigenvaluesToString(eigRe, eigIm));
+    std::print("n = {}, Wektory wlasne {}\n", n, capd::alglib::eigenvectorsToString(vectRe, vectIm));
+}
+
 int main() {
     class gnuPlotManager manager{{
         {
@@ -32,7 +49,7 @@ int main() {
 
             .xName = "n",
             .yName = "xN"
-        }
+        },
     }};
 
     constexpr uint32_t order = 20;
@@ -54,10 +71,13 @@ int main() {
         f.setParameter(0, n);
 
         cyclic = Newton(u, map);
+        getEigenValues(n, cyclic, map);
 
         std::print("Orbita: {}\n", cyclic);
         manager.print(0, "{} {}\n", n, cyclic[N]);
         manager.fflush();
+
+        manager.initGNUPlot();
     }
 
     std::cout << map(u) - u << std::endl;

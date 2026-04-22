@@ -14,7 +14,7 @@ int main() {
             .xName = "n",
             .yName = "xN"
         }
-    }};
+    }, true};
 
     constexpr uint32_t order = 20;
     long double n = 8.7;

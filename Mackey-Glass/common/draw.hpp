@@ -12,10 +12,12 @@ struct thing {
 };
 
 class gnuPlotManager {
+    bool isEnabled = false;
+
 public:
     std::vector<struct thing> drawers;
 
-    gnuPlotManager(std::vector<struct thing> &&array);
+    gnuPlotManager(std::vector<struct thing> &&array, bool init = false);
     ~gnuPlotManager();
 
     template <typename... Args>
