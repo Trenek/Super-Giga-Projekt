@@ -37,7 +37,12 @@ void gnuPlotManager::initGNUPlot() {
 
     if (this->isEnabled == false) {
         for (auto &drawer : this->drawers) {
-            setGNUPlot(id++, drawer);
+            if (drawer.setGNUPlot) {
+                drawer.setGNUPlot(id++, drawer);
+            }
+            else {
+                setGNUPlot(id++, drawer);
+            }
         }
     }
 

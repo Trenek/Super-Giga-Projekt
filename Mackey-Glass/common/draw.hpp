@@ -9,6 +9,8 @@ struct thing {
 
     const char *xName;
     const char *yName;
+
+    void (*setGNUPlot)(int id, struct thing &drawer);
 };
 
 class gnuPlotManager {

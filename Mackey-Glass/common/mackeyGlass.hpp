@@ -57,7 +57,6 @@ void mackeyGlass(num &time, num in[], int dimIn, num out[], int dimOut, num para
     applyChebyshev<N>(in, out);
 }
 
-
 #undef gamma
 #undef beta
 #undef k
