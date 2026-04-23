@@ -4,7 +4,6 @@
 #include "draw.hpp"
 
 #define N 5
-#define n 8.7
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
@@ -19,8 +18,10 @@ static void setGNUPlot(int id, struct thing &drawer) {
 
     fprintf(drawer.gnuplot, "pause 1\n");
 
-    fprintf(drawer.gnuplot, "plot \"%s\" index 0 with lines lw 2 lc rgb 'red' title 'f(X)', \\\n", drawer.file);
-    fprintf(drawer.gnuplot, "     \"%s\" index 1 with lines lw 2 lc rgb 'blue' title 'X'\n", drawer.file);
+    fprintf(drawer.gnuplot, "plot "
+            "\"%s\" index 0 with lines lw 2 lc rgb 'orange' title 'X', "
+            "\"%s\" index 1 with dots lw 2 lc rgb 'cyan' title 'f(X)'\n",
+    drawer.file, drawer.file);
 
     fprintf(drawer.gnuplot, "bind 'q' 'exit'\n");
     fprintf(drawer.gnuplot, "while (1) {\n");
@@ -30,7 +31,7 @@ static void setGNUPlot(int id, struct thing &drawer) {
     fflush(drawer.gnuplot);
 }
 
-capd::LDVector Newton(capd::LDVector u, capd::LDPoincareMap map) {
+static capd::LDVector Newton(capd::LDVector u, capd::LDPoincareMap map) {
     capd::vectalg::MaxNorm<capd::LDVector, capd::LDMatrix> maxNorm;
 
     capd::LDMatrix Dphi(N + 1, N + 1);
@@ -48,7 +49,7 @@ capd::LDVector Newton(capd::LDVector u, capd::LDPoincareMap map) {
     return u;
 }
 
-capd::LDMatrix calcEigenVector(capd::LDVector u0, capd::LDPoincareMap map) {
+static capd::LDMatrix calcEigenVector(capd::LDVector u0, capd::LDPoincareMap map) {
     capd::LDMatrix dPhi(N + 1, N + 1);
 
     capd::LDVector u1 = map(u0, dPhi);
@@ -64,7 +65,7 @@ capd::LDMatrix calcEigenVector(capd::LDVector u0, capd::LDPoincareMap map) {
     return capd::matrixAlgorithms::gaussInverseMatrix(vectRe) * dP * vectRe;
 }
 
-void drawBorder(double b0, double b1, double e0, double e1, capd::LDMatrix A, struct gnuPlotManager *manager) {
+static void drawBorder(double b0, double b1, double e0, double e1, capd::LDMatrix A, struct gnuPlotManager *manager) {
     capd::LDVector v(N + 1);
     capd::LDVector img;
 
@@ -77,8 +78,17 @@ void drawBorder(double b0, double b1, double e0, double e1, capd::LDMatrix A, st
     }
 };
 
-void checkForCoveringRelationship(capd::LDVector u, capd::LDPoincareMap map, struct gnuPlotManager *manager) {
-    double side = 10e-20;
+static void drawInitialRectangle(double side, struct gnuPlotManager *manager) {
+    manager->print(0, "{} {}\n", -side, -side);
+    manager->print(0, "{} {}\n", side, -side);
+    manager->print(0, "{} {}\n", side, side);
+    manager->print(0, "{} {}\n", -side, side);
+    manager->print(0, "{} {}\n", -side, -side);
+
+    manager->print(0, "\n\n"); 
+}
+
+static void checkForCoveringRelationship(capd::LDVector u, capd::LDPoincareMap map, struct gnuPlotManager *manager, double side) {
     capd::LDVector l(N + 1); {
         l[0] = -side; 
     }
@@ -92,13 +102,6 @@ void checkForCoveringRelationship(capd::LDVector u, capd::LDPoincareMap map, str
     drawBorder(side, -side, side, side, A, manager);
     drawBorder(side, side, -side, side, A, manager);
     drawBorder(-side, side, -side, -side, A, manager);
-
-    manager->print(0, "\n\n"); 
-    manager->print(0, "{} {}\n", -side, -side);
-    manager->print(0, "{} {}\n", side, -side);
-    manager->print(0, "{} {}\n", side, side);
-    manager->print(0, "{} {}\n", -side, side);
-    manager->print(0, "{} {}\n", -side, -side);
 }
 
 int main() {
@@ -122,6 +125,7 @@ int main() {
     capd::LDCoordinateSection section{N + 1, 0, 0.6};
     capd::LDPoincareMap map{solver, section, capd::poincare::MinusPlus};
 
+    double side = 10e-20;
     capd::LDVector u(N + 1); {
         for (auto &e : u) {
             e = 1.1; 
@@ -129,12 +133,15 @@ int main() {
         u[0] = 0.6; 
     }
 
-    f.setParameter(0, n);
+    drawInitialRectangle(side, &manager);
 
-    checkForCoveringRelationship(u, map, &manager);
+    for (double n = 8.7; n < 9; n += 0.001) {
+        f.setParameter(0, n);
+        checkForCoveringRelationship(u, map, &manager, side);
 
-    manager.fflush();
-    manager.initGNUPlot();
+        manager.fflush();
+        manager.initGNUPlot();
+    }
 
     return 0;
 }
