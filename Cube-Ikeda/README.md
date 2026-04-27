@@ -1,3 +1,6 @@
+# for now description not up to date, but 'Build & run' is right
+
+
 # Cubic Ikeda DDE — Bifurcation & Poincaré Analysis
 
 **Cubic Ikeda delay differential equation (DDE)**:

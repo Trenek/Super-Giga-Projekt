@@ -1,46 +1,50 @@
 # ── project ──────────────────────────────────────────────────────────────────
-PROGS   = output/cubicIkeda
+PROGS   = help #periodicOrbit
 OTHERS  = computations/integrateFuncs computations/toOdeFuncs computations/newton
 
-# ── capd ─────────────────────────────────────────────────────────────────────
+# ── CAPD ──────────────────────────────────────────────────────────────────────
 CAPDBINDIR =
-CAPDCXX    := $(shell $(CAPDBINDIR)capd-config --variable=capd_cxx)
-CAPDFLAGS   = $(shell $(CAPDBINDIR)capd-config --cflags)
-CAPDLIBS    = $(shell $(CAPDBINDIR)capd-config --libs)
+CAPDCXX   := $(shell $(CAPDBINDIR)capd-config --variable=capd_cxx)
+CAPDFLAGS  = $(shell $(CAPDBINDIR)capd-config --cflags)
+CAPDLIBS   = $(shell $(CAPDBINDIR)capd-config --libs)
 
-# ── compiler ─────────────────────────────────────────────────────────────────
+# ── compiler ──────────────────────────────────────────────────────────────────
 CXXFLAGS += $(CAPDFLAGS) -O2 -std=c++17 -Icomputations
 
-# ── internals ────────────────────────────────────────────────────────────────
-OBJDIR     = .obj/
-MAIN_OBJ   = $(OBJDIR)main.o
+# ── directories ──────────────────────────────────────────────────────────────
+OBJDIR = .obj/
+
+# ── object files ─────────────────────────────────────────────────────────────
 OTHERS_OBJ = $(OTHERS:%=$(OBJDIR)%.o)
-OBJ_FILES  = $(MAIN_OBJ) $(OTHERS_OBJ)
+OBJ_FILES  = $(OTHERS_OBJ) $(PROGS:%=$(OBJDIR)%.o)
 
-# ── targets ──────────────────────────────────────────────────────────────────
-.PHONY: all run plot clean
+.PHONY: all clean run
 
-all: $(PROGS)
+# ── build all programs ───────────────────────────────────────────────────────
+all: $(PROGS:%=output/%)
 
-$(PROGS): $(MAIN_OBJ) $(OTHERS_OBJ) | output
-	$(CAPDCXX) -o $@ $(MAIN_OBJ) $(OTHERS_OBJ) $(CAPDLIBS)
+# ── linking rule (CAPD standard) ─────────────────────────────────────────────
+output/%: $(OBJDIR)%.o $(OTHERS_OBJ)
+	@mkdir -p output
+	$(CAPDCXX) -o $@ $< $(OTHERS_OBJ) $(CAPDLIBS)
 
-run: all
-	./output/cubicIkeda
-
-plot: run
-	venv/bin/python3 plot_traj.py
-
-output:
-	mkdir -p output
-
-# ── compile + dependency generation ──────────────────────────────────────────
+# ── dependency tracking ──────────────────────────────────────────────────────
 -include $(OBJ_FILES:%=%.d)
 
+# ── compilation rule ──────────────────────────────────────────────────────────
 $(OBJ_FILES): $(OBJDIR)%.o : %.cpp
 	@mkdir -p $(dir $@)
 	$(CAPDCXX) $(CXXFLAGS) -MT $@ -MD -MP -MF $(@:%=%.d) -c -o $@ $<
 
+# ── run ──────────────────────────────────────────────────────────────────────
+run: all
+# 	./output/periodicOrbit
+	./output/help
+
+# ── plot ──────────────────────────────────────────────────────────────────────
+plot: run
+	venv/bin/python3 plot_traj.py
+
 # ── clean ────────────────────────────────────────────────────────────────────
 clean:
-	rm -rf $(OBJDIR) $(PROGS)
+	rm -rf $(OBJDIR) output

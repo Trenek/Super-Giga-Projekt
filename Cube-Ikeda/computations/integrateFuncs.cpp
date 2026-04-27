@@ -34,9 +34,9 @@ void getPoincareValues(DPoincareMap &pm, DVector &x, const string &filename) {
 // gnuplot code written by Claude
 void plotBifurcationDiagram(DMap &CubicIkeda, DPoincareMap &pm, DVector &x,
                             double aStart, double aEnd, double aFrequency,
-                            int noSteps, string filename) {
+                            int noSteps, string filename1) {
   FILE *gp = popen("gnuplot", "w"); // no -persistent needed for file output
-  // string filename = "images/finding2periodic.png";
+  string filename = "images/chaos.png";
   fprintf(gp, "set terminal pngcairo size 1200,800\n");
   fprintf(gp, "set output '%s'\n", filename.c_str());
   fprintf(gp, "set title 'Bifurcation diagram - Cubic Ikeda DDE'\n");
@@ -45,7 +45,7 @@ void plotBifurcationDiagram(DMap &CubicIkeda, DPoincareMap &pm, DVector &x,
   fprintf(gp, "set pointsize 1.5\n");
 
   // this gave me confirmation that for a = 1.535 there is the 2-periodic orbit
-  // fprintf(gp, "set arrow from %f, graph 0 to %f, graph 1 nohead lc rgb 'red' lw 1.5\n", 1.535, 1.535);
+  fprintf(gp, "set arrow from %f, graph 0 to %f, graph 1 nohead lc rgb 'red' lw 1.5\n", 1.5385, 1.5385);
 
   fprintf(gp, "plot '-' with dots lc rgb '#000000' notitle\n");
 

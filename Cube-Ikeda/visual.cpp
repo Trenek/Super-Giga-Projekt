@@ -3,6 +3,7 @@
 #include "computations/toOdeFuncs.h"
 #include <iomanip>
 #include <iostream>
+#include <algorithm>
 using namespace capd;
 using namespace std;
 
@@ -41,11 +42,11 @@ void approx_CubicIkeda(capd ::autodiff ::Node /*t*/, // unused time variable
   }
 }
 
-// MAIN FUNCTION // ---------------------------------------------------------------------
+/* MAIN FUNCTION --------------------------------------------------------------------- */
 
 int main()
 {
-  int N = 6;
+  const int N = 6;
   int dimIn = N + 1, dimOut = N + 1, noParams = 1, highestDerivative = 1;
   double tau = 1., a = 1.57;
   int taylorOrder = 20;
@@ -57,11 +58,11 @@ int main()
   string filenameSolutionCurve = "output/curve.csv";
   string filenameBifurc = "output/bifurcDiagram.png";
 
-  approxMatrix = compute_approxMatrix(tau, N, filenameM);
-
+  approxMatrix = compute_approxMatrix(tau, N+1, filenameM);
   DMap CubicIkeda(approx_CubicIkeda, dimIn, dimOut, noParams,
                   highestDerivative);
   CubicIkeda.setParameters({a});
+
 
   DOdeSolver solver(CubicIkeda, taylorOrder);
   DTimeMap timeMap(solver);
@@ -85,39 +86,11 @@ int main()
   double aFrequency = 1000;
   int noSteps = 1000;
 
-  // getPoincareValues(pm, x, filenamePoincare);  // saves a few values for ensuring the section is correct
+  getPoincareValues(pm, x, filenamePoincare);  // saves a few values for ensuring the section is correct
 
   /* plots bifurcation diagram: will take a while :) */
-  // plotBifurcationDiagram(CubicIkeda, pm, x, aStart, aEnd, aFrequency, noSteps,
-  //                        filenameBifurc);
-
-  /* searching for stationary point for lower papameter a */
-  CubicIkeda.setParameters({1.5});
-  double precision = 1e-15;
-
-  DVector start(N + 1);
-  start[0] = 0;
-  start[N] = 1.44;
-  for (int i = 1; i < N; i++)
-  {
-    start[i] = 1 / 4.;
-  }
-
-  DVector periodicPoint = getZero(pm, start, precision);
-
-  a = 1.53;
-  while (a < 1.538)
-  {
-    CubicIkeda.setParameters({a});
-    periodicPoint = getZero(pm, periodicPoint, precision);
-    a += .0008;
-  }
-  cout << "difference betweeen found x and P(x) for a = " << a << ":\n"
-       << periodicPoint - pm(periodicPoint) << endl;
-
-  getSolutionCurve(timeMap, periodicPoint, 200., 0., "output/newton.csv");
-
-  
+  plotBifurcationDiagram(CubicIkeda, pm, x, aStart, aEnd, aFrequency, noSteps,
+                         filenameBifurc);
 
   return 0;
 }

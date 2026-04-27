@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("output/curve.csv")
+df = pd.read_csv("periodic.csv")
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -10,7 +10,7 @@ ax.set_xlabel('x(t)')
 ax.set_ylabel('x(t-tau)')
 
 # We save the figure instead of showing it
-plt.savefig("output/traj_plot.png", dpi=300)
+plt.savefig("output/periodic.png", dpi=300)
 
 with open('output/poincare.txt') as f:
     for line in f:
@@ -22,13 +22,13 @@ with open('output/poincare.txt') as f:
 plt.savefig("output/poincare_traj_plot.png", dpi=300)
 
 
-df = pd.read_csv("output/newton.csv")
+# df = pd.read_csv("output/newton.csv")
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.plot(df['x_present'], df['x_delayed'], lw = .5, alpha = .5)
-ax.set_xlabel('x(t)')
-ax.set_ylabel('x(t-tau)')
+# fig = plt.figure()
+# ax = fig.add_subplot(111)
+# ax.plot(df['x_present'], df['x_delayed'], lw = .5, alpha = .5)
+# ax.set_xlabel('x(t)')
+# ax.set_ylabel('x(t-tau)')
 
-# We save the figure instead of showing it
-plt.savefig("output/newton_traj.png", dpi=300)
+# # We save the figure instead of showing it
+# plt.savefig("output/newton_traj.png", dpi=300)

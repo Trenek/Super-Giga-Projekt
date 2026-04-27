@@ -4,4 +4,5 @@
 using namespace capd;
 using namespace std;
 
-DVector getZero(DPoincareMap& pm, DVector& x0, double precision);
+DVector getCandidate(DMap& map, DPoincareMap& pm, int N, double aStart, double aEnd);
+void plotRectangles(const IVector& rect1, const IVector& rect2);
