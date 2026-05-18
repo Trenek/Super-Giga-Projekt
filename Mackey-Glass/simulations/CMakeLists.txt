@@ -21,3 +21,9 @@ add_executable(CoveringRelation
     "${CMAKE_CURRENT_SOURCE_DIR}/coveringRelation.cpp"
 )
 target_link_libraries(CoveringRelation Common)
+
+project(IntervalCoveringRelation LANGUAGES CXX)
+add_executable(IntervalCoveringRelation
+    "${CMAKE_CURRENT_SOURCE_DIR}/intervalCoveringRelation.cpp"
+)
+target_link_libraries(IntervalCoveringRelation Common)
